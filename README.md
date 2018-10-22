@@ -17,7 +17,8 @@ This chart will do the following:
 ```bash
 $ LB_HOST=$(kubectl -n ingress-nginx get svc ingress-nginx -o jsonpath="{.status.loadBalancer.ingress[0].hostname}")
 $ LB_IP="$(dig +short $LB_HOST | tail -n 1)"
-$ echo $LB_HOST;HOST="jenkins.$LB_IP.nip.io"
+$ echo $LB_HOST
+$ HOST="jenkins.$LB_IP.nip.io"
 $ echo $HOST
 ```
 
@@ -30,5 +31,13 @@ $ helm install stable/jenkins \
     --name jenkins \
     --namespace default \
     --values jenkins-values.yaml \
-    --set Master.HostName=$HOSTs
+    --set Master.HostName=$HOST
+```
+
+## Upgrade the Chart
+```bash
+$ helm upgrade stable/jenkins \
+    --namespace default \
+    --values jenkins-values.yaml \
+    --set Master.HostName=$HOST
 ```
