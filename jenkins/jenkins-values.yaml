@@ -1,0 +1,78 @@
+Master:
+  Image: "jenkins/jenkins"
+  ImageTag: "lts"
+  Cpu: "500m"
+  Memory: "500Mi"
+  ServiceType: ClusterIP
+  ServiceAnnotations:
+    service.beta.kubernetes.io/aws-load-balancer-backend-protocol: http
+  AdminPassword: "Jenkins.18$"
+  HealthProbes: true
+  HealthProbesLivenessTimeout: 90
+  HealthProbesReadinessTimeout: 60
+  HealthProbeLivenessFailureThreshold: 12
+  SlaveListenerPort: 50000
+  DisabledAgentProtocols:
+    - JNLP-connect
+    - JNLP2-connect
+  CSRF:
+    DefaultCrumbIssuer:
+      Enabled: true
+      ProxyCompatability: true
+  CLI: false
+  InstallPlugins:
+    - blueocean:1.5.0
+    - credentials:2.1.16
+    - ec2:1.39
+    - git:3.8.0
+    - git-client:2.7.1
+    - github:1.29.0
+    - kubernetes:1.5.2
+    - pipeline-utility-steps:2.0.2
+    - script-security:1.43
+    - slack:2.3
+    - thinBackup:1.9
+    - workflow-aggregator:2.5
+  Ingress:
+    Annotations:
+      nginx.ingress.kubernetes.io/ssl-redirect: "false"
+      nginx.ingress.kubernetes.io/proxy-body-size: 50m
+      nginx.ingress.kubernetes.io/proxy-request-buffering: "off"
+      ingress.kubernetes.io/ssl-redirect: "false"
+      ingress.kubernetes.io/proxy-body-size: 50m
+      ingress.kubernetes.io/proxy-request-buffering: "off"
+  HostName: jenkins.acme.com
+Agent:
+  Enabled: true
+  Image: jenkins/jnlp-slave
+  ImageTag: 3.10-1
+  CustomJenkinsLabels: []
+  Component: "jenkins-slave"
+  Privileged: false
+  resources:
+    requests:
+      cpu: "200m"
+      memory: "256Mi"
+    limits:
+      cpu: "200m"
+      memory: "256Mi"
+  AlwaysPullImage: false
+  PodRetention: Never
+  volumes:
+  NodeSelector: {}
+Persistence:
+  Enabled: true
+  Annotations: {}
+  AccessMode: ReadWriteOnce
+  Size: 8Gi
+  volumes:
+  mounts:
+NetworkPolicy:
+  Enabled: false
+  ApiVersion: extensions/v1beta1
+rbac:
+  install: true
+  serviceAccountName: jenkins
+  apiVersion: v1
+  roleRef: cluster-admin
+  roleBindingKind: ClusterRoleBinding
